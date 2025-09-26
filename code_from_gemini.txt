@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Crypto Constants Generator</title>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* --- UI THEME ADAPTED FROM IMAGE --- */
+        :root {
+            --color-primary: #2D9CDB;
+            --color-surface: #FFFFFF;
+            --color-on-surface: #1a1c1c;
+            --color-on-surface-variant: #6c757d;
+            --color-outline: #e0e0e0;
+            --color-background-start: #e0f7fa; /* Light Cyan */
+            --color-background-end: #e8f5e9;   /* Light Green-ish */
+            --font-family-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        *, *::before, *::after {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            font-family: var(--font-family-main);
+            background: linear-gradient(135deg, var(--color-background-start) 0%, var(--color-background-end) 100%);
+            color: var(--color-on-surface);
+            display: grid;
+            place-items: center;
+            padding: 1rem;
+            line-height: 1.6;
+        }
+
+        .card {
+            width: 100%;
+            max-width: 420px;
+            background-color: var(--color-surface);
+            border-radius: 28px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: floatUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+        
+        @keyframes floatUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .card-header h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 0 0 0.75rem;
+        }
+
+        .card-header p {
+            color: var(--color-on-surface-variant);
+            margin: 0 auto 2.5rem;
+            font-size: 1rem;
+            max-width: 35ch;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-field {
+            display: flex;
+            align-items: center;
+            background-color: #fff;
+            border: 1px solid var(--color-outline);
+            border-radius: 9999px; /* Pill shape */
+            padding: 0.25rem 0.25rem 0.25rem 1.25rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .input-field:focus-within {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(45, 156, 219, 0.15);
+        }
+        
+        .input-field input {
+            flex-grow: 1;
+            border: none;
+            background: none;
+            outline: none;
+            font-size: 1rem;
+            padding: 0.75rem 0.5rem;
+            font-family: inherit;
+            color: var(--color-on-surface);
+        }
+        
+        .input-field input::placeholder {
+            color: #999;
+        }
+
+        .generate-button {
+            display: block;
+            width: 100%;
+            margin-top: 1.5rem;
+            padding: 0.875rem;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #fff;
+            background-color: var(--color-on-surface);
+            border: none;
+            border-radius: 9999px; /* Pill shape */
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.2s ease;
+        }
+        
+        .generate-button:hover {
+            background-color: #000;
+            transform: translateY(-2px);
+        }
+        
+        .card-footer {
+            margin-top: 2.5rem;
+            font-size: 0.875rem;
+            color: #aaa;
+        }
+        
+        .card-footer span {
+            color: #e25555; /* Heart color */
+        }
+        
+        #output {
+            margin-top: 2rem;
+            background-color: #f7f7f7;
+            border: 1px solid var(--color-outline);
+            border-radius: 16px;
+            padding: 1.25rem;
+            text-align: left;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'SF Mono', 'Menlo', 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            display: none; /* Hidden by default */
+        }
+
+        .copy-button {
+            display: block;
+            margin: 1rem auto 0;
+            background: none;
+            border: 1px solid var(--color-on-surface);
+            color: var(--color-on-surface);
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+        .copy-button:hover {
+            background-color: var(--color-on-surface);
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <main class="card">
+        <div class="card-header">
+            <h2>Crypto Generator</h2>
+            <p>Create the constants for your secure redirect page.</p>
+        </div>
+        
+        <form id="generatorForm" onsubmit="return false;">
+            <div class="form-group">
+                <div class="input-field">
+                    <input type="text" id="password" placeholder="your-strong-passphrase-here">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <div class="input-field">
+                    <input type="text" id="url" placeholder="string-to-be-protected-here">
+                </div>
+            </div>
+            
+            <button id="generateBtn" class="generate-button">Generate Constants</button>
+        </form>
+
+        <div id="output">
+            <pre id="outputCode"></pre>
+            <button class="copy-button" id="copyBtn">Copy to Clipboard</button>
+        </div>
+        
+        <div class="card-footer">
+            <p>Made with ♥ by Zaid</p>
+            <p>Found a bug? contact: me@zaid.ovh</p>
+        </div>
+    </main>
+
+    <script>
+        // All JavaScript logic remains unchanged.
+        document.getElementById('generateBtn').addEventListener('click', async () => {
+            const password = document.getElementById('password').value;
+            const url = document.getElementById('url').value;
+
+            if (!password || !url) {
+                alert("Please provide both a password and a URL.");
+                return;
+            }
+
+            // --- Hashing ---
+            const msgBuffer = new TextEncoder().encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const passwordHash = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+            // --- Encryption ---
+            const salt = crypto.getRandomValues(new Uint8Array(16));
+            const iv = crypto.getRandomValues(new Uint8Array(12));
+            const urlBuffer = new TextEncoder().encode(url);
+            
+            const keyMaterial = await crypto.subtle.importKey('raw', msgBuffer, { name: 'PBKDF2' }, false, ['deriveKey']);
+            const key = await crypto.subtle.deriveKey(
+                { name: 'PBKDF2', salt: salt, iterations: 100000, hash: 'SHA-256' },
+                keyMaterial,
+                { name: 'AES-GCM', length: 256 },
+                true,
+                ['encrypt']
+            );
+            
+            const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, urlBuffer);
+            
+            // --- Base64 Encoding for Storage ---
+            const arrayBufferToBase64 = (buffer) => {
+                let binary = '';
+                const bytes = new Uint8Array(buffer);
+                const len = bytes.byteLength;
+                for (let i = 0; i < len; i++) {
+                    binary += String.fromCharCode(bytes[i]);
+                }
+                return window.btoa(binary);
+            };
+
+            const saltB64 = arrayBufferToBase64(salt);
+            const ivB64 = arrayBufferToBase64(iv);
+            const ciphertextB64 = arrayBufferToBase64(ciphertext);
+
+            const outputCode = `// The SHA-256 hash of the password.
+const CORRECT_PASSWORD_HASH = '${passwordHash}';
+            
+// Encrypted data for string using the password.
+const SALT_B64 = '${saltB64}';
+const IV_B64 = '${ivB64}';
+const CIPHERTEXT_B64 = '${ciphertextB64}';`;
+            
+            const outputElement = document.getElementById('output');
+            const outputCodeElement = document.getElementById('outputCode');
+            
+            outputCodeElement.textContent = outputCode;
+            outputElement.style.display = 'block';
+        });
+
+        document.getElementById('copyBtn').addEventListener('click', () => {
+            const codeToCopy = document.getElementById('outputCode').textContent;
+            navigator.clipboard.writeText(codeToCopy).then(() => {
+                const copyBtn = document.getElementById('copyBtn');
+                copyBtn.textContent = 'Copied!';
+                setTimeout(() => { copyBtn.textContent = 'Copy to Clipboard'; }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy text: ', err);
+            });
+        });
+    </script>
+</body>
+</html>
+
