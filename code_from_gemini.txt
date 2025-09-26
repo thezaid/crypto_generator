@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
 
     <style>
-        /* --- UI THEME ADAPTED FROM IMAGE --- */
+        /* --- THEME & SETUP --- */
         :root {
             --color-primary: #2D9CDB;
             --color-surface: #FFFFFF;
@@ -23,14 +23,8 @@
             --font-family-main: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
-        *, *::before, *::after {
-            box-sizing: border-box;
-        }
-
-        html, body {
-            height: 100%;
-            margin: 0;
-        }
+        *, *::before, *::after { box-sizing: border-box; }
+        html, body { height: 100%; margin: 0; }
 
         body {
             font-family: var(--font-family-main);
@@ -42,26 +36,25 @@
             line-height: 1.6;
         }
 
+        /* --- CARD --- */
         .card {
             width: 100%;
-            max-width: 420px;
+            max-width: 450px;
             background-color: var(--color-surface);
             border-radius: 28px;
-            padding: 2.5rem 2rem;
+            padding: 2.5rem;
             text-align: center;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.07);
             opacity: 0;
             transform: translateY(20px);
             animation: floatUp 0.7s cubic-bezier(0.25, 1, 0.5, 1) forwards;
         }
         
         @keyframes floatUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            to { opacity: 1; transform: translateY(0); }
         }
         
+        /* --- HEADER & FOOTER --- */
         .card-header h2 {
             font-size: 1.75rem;
             font-weight: 700;
@@ -74,26 +67,44 @@
             font-size: 1rem;
             max-width: 35ch;
         }
-        
-        .form-group {
-            margin-bottom: 1rem;
+
+        .card-footer {
+            margin-top: 2.5rem;
+            font-size: 0.875rem;
+            color: #aaa;
         }
+        .card-footer a {
+            color: var(--color-primary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        .card-footer a:hover { color: #007bb5; }
+        .card-footer p { margin: 0.25rem 0; }
+        .card-footer .heart { color: #e25555; }
+
+        /* --- FORM ELEMENTS --- */
+        .form-group { margin-bottom: 1.25rem; }
 
         .input-field {
             display: flex;
             align-items: center;
-            background-color: #fff;
+            gap: 0.75rem;
+            background-color: #f9f9f9;
             border: 1px solid var(--color-outline);
-            border-radius: 9999px; /* Pill shape */
-            padding: 0.25rem 0.25rem 0.25rem 1.25rem;
+            border-radius: 12px;
+            padding: 0.25rem 0.5rem 0.25rem 1.25rem;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
-
         .input-field:focus-within {
             border-color: var(--color-primary);
-            box-shadow: 0 0 0 3px rgba(45, 156, 219, 0.15);
+            background-color: #fff;
+            box-shadow: 0 0 0 4px rgba(45, 156, 219, 0.1);
         }
-        
+        .input-field .icon {
+            color: var(--color-on-surface-variant);
+            width: 18px;
+            height: 18px;
+        }
         .input-field input {
             flex-grow: 1;
             border: none;
@@ -104,72 +115,204 @@
             font-family: inherit;
             color: var(--color-on-surface);
         }
-        
-        .input-field input::placeholder {
-            color: #999;
+        .input-field input::placeholder { color: #999; }
+
+        .button-group {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1.5rem;
         }
 
         .generate-button {
-            display: block;
-            width: 100%;
-            margin-top: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            /* width is now controlled by the flex container */
+            flex-grow: 1;
             padding: 0.875rem;
             font-size: 1rem;
             font-weight: 500;
             color: #fff;
             background-color: var(--color-on-surface);
             border: none;
-            border-radius: 9999px; /* Pill shape */
+            border-radius: 12px;
             cursor: pointer;
-            transition: background-color 0.2s ease, transform 0.2s ease;
+            transition: all 0.2s ease;
         }
-        
         .generate-button:hover {
             background-color: #000;
             transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-        
-        .card-footer {
-            margin-top: 2.5rem;
-            font-size: 0.875rem;
-            color: #aaa;
+        .generate-button:active {
+            transform: translateY(0);
+            box-shadow: none;
         }
-        
-        .card-footer span {
-            color: #e25555; /* Heart color */
+
+        /* --- LOADING SPINNER --- */
+        .generate-button.loading .button-text { display: none; }
+        .generate-button .spinner { display: none; }
+        .generate-button.loading .spinner {
+            display: block;
+            width: 20px;
+            height: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
-        
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* --- OUTPUT AREA --- */
         #output {
             margin-top: 2rem;
             background-color: #f7f7f7;
             border: 1px solid var(--color-outline);
             border-radius: 16px;
-            padding: 1.25rem;
             text-align: left;
+            overflow: hidden;
+            max-height: 0;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: max-height 0.5s ease-out, opacity 0.5s ease-out, transform 0.5s ease-out, padding 0.5s ease-out, margin 0.5s ease-out;
+        }
+        #output.visible {
+            padding: 1.25rem;
+            max-height: 500px; /* Adjust as needed */
+            opacity: 1;
+            transform: translateY(0);
+        }
+        #output pre {
+            margin: 0;
             white-space: pre-wrap;
             word-wrap: break-word;
             font-family: 'SF Mono', 'Menlo', 'Courier New', monospace;
             font-size: 0.875rem;
             line-height: 1.6;
-            display: none; /* Hidden by default */
         }
+
+        /* --- Styles for Labeled Constants Output --- */
+        .output-constants-grid {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            gap: 0.75rem 1rem;
+            align-items: center;
+            font-family: 'SF Mono', 'Menlo', 'Courier New', monospace;
+            font-size: 0.875rem;
+        }
+        .output-constants-grid .label {
+            font-weight: 500;
+            color: var(--color-on-surface-variant);
+            text-align: right;
+        }
+        .output-constants-grid .value {
+            background-color: #e9ecef;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            word-break: break-all;
+            color: var(--color-on-surface);
+        }
+        .output-constants-grid .copy-icon-btn {
+            background: none;
+            border: none;
+            padding: 0.25rem;
+            cursor: pointer;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--color-on-surface-variant);
+            transition: background-color 0.2s, color 0.2s;
+        }
+        .output-constants-grid .copy-icon-btn:hover {
+            background-color: #e9ecef;
+            color: var(--color-on-surface);
+        }
+        .output-constants-grid .copy-icon-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+        .output-constants-grid .copy-feedback {
+            font-size: 0.75rem;
+            color: var(--color-primary);
+            grid-column: 3;
+            justify-self: center;
+            height: 1em; /* Reserve space to prevent layout shift */
+        }
+
 
         .copy-button {
             display: block;
             margin: 1rem auto 0;
             background: none;
-            border: 1px solid var(--color-on-surface);
-            color: var(--color-on-surface);
+            border: 1px solid var(--color-on-surface-variant);
+            color: var(--color-on-surface-variant);
             padding: 0.5rem 1rem;
-            border-radius: 9999px;
+            border-radius: 8px;
             cursor: pointer;
             font-weight: 500;
             transition: all 0.2s ease;
         }
         .copy-button:hover {
-            background-color: var(--color-on-surface);
+            background-color: var(--color-on-surface-variant);
             color: #fff;
+            border-color: var(--color-on-surface-variant);
         }
+
+        /* Custom alert box */
+        .custom-alert-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.4);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+            z-index: 1000;
+        }
+        .custom-alert-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .custom-alert-box {
+            background: var(--color-surface);
+            padding: 2rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 90%;
+            width: 350px;
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .custom-alert-overlay.visible .custom-alert-box {
+            transform: scale(1);
+        }
+        .custom-alert-box p {
+            margin: 0 0 1.5rem 0;
+            color: var(--color-on-surface);
+            font-size: 1rem;
+        }
+        .custom-alert-box button {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--color-primary);
+            color: white;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .custom-alert-box button:hover {
+            background-color: #1a8cdb;
+        }
+
     </style>
 </head>
 <body>
@@ -182,41 +325,95 @@
         <form id="generatorForm" onsubmit="return false;">
             <div class="form-group">
                 <div class="input-field">
+                    <!-- Lock Icon -->
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M480-80q-83 0-141.5-58.5T280-280h400q0 83-58.5 141.5T480-80Zm200-240H280v-240q0-83 58.5-141.5T480-720q83 0 141.5 58.5T680-520v240Z"/></svg>
                     <input type="text" id="password" placeholder="your-strong-passphrase-here">
                 </div>
             </div>
             
             <div class="form-group">
                 <div class="input-field">
+                    <!-- Link Icon -->
+                    <svg class="icon" xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M440-280H280q-83 0-141.5-58.5T80-480q0-83 58.5-141.5T280-680h160v80H280q-50 0-85 35t-35 85q0 50 35 85t85 35h160v80ZM320-440v-80h320v80H320Zm200 160v-80h160q50 0 85-35t35-85q0-50-35-85t-85-35H520v-80h160q83 0 141.5 58.5T880-480q0 83-58.5 141.5T680-280H520Z"/></svg>
                     <input type="text" id="url" placeholder="string-to-be-protected-here">
                 </div>
             </div>
             
-            <button id="generateBtn" class="generate-button">Generate Constants</button>
+            <div class="button-group">
+                <button id="generateBtn" class="generate-button">
+                    <span class="button-text">Generate Code</span>
+                    <div class="spinner"></div>
+                </button>
+                <button id="generateConstantsBtn" class="generate-button">
+                    <span class="button-text">Generate Constants</span>
+                    <div class="spinner"></div>
+                </button>
+            </div>
         </form>
 
         <div id="output">
-            <pre id="outputCode"></pre>
+            <div id="outputContainer">
+                <pre id="outputCode"></pre>
+            </div>
             <button class="copy-button" id="copyBtn">Copy to Clipboard</button>
         </div>
         
         <div class="card-footer">
-            <p>Made with ♥ by Zaid</p>
-            <p>Found a bug? contact: me@zaid.ovh</p>
+            <p>Made with <span class="heart">♥</span> by Zaid</p>
+            <p>Found a bug? <a href="mailto:me@zaid.ovh">Contact me</a></p>
         </div>
     </main>
 
+    <!-- Custom Alert Box HTML -->
+    <div class="custom-alert-overlay" id="alertOverlay">
+        <div class="custom-alert-box">
+            <p id="alertMessage"></p>
+            <button id="alertCloseBtn">OK</button>
+        </div>
+    </div>
+
     <script>
-        // All JavaScript logic remains unchanged.
-        document.getElementById('generateBtn').addEventListener('click', async () => {
-            const password = document.getElementById('password').value;
-            const url = document.getElementById('url').value;
+        // --- Element Selectors ---
+        const generateBtn = document.getElementById('generateBtn');
+        const generateConstantsBtn = document.getElementById('generateConstantsBtn');
+        const outputElement = document.getElementById('output');
+        const outputContainer = document.getElementById('outputContainer');
+        const alertOverlay = document.getElementById('alertOverlay');
+        const alertMessage = document.getElementById('alertMessage');
+        const alertCloseBtn = document.getElementById('alertCloseBtn');
 
-            if (!password || !url) {
-                alert("Please provide both a password and a URL.");
-                return;
+        // --- Custom Alert Logic ---
+        const showAlert = (message) => {
+            alertMessage.textContent = message;
+            alertOverlay.classList.add('visible');
+        };
+
+        alertCloseBtn.addEventListener('click', () => {
+            alertOverlay.classList.remove('visible');
+        });
+        alertOverlay.addEventListener('click', (e) => {
+             if (e.target === alertOverlay) {
+                alertOverlay.classList.remove('visible');
+             }
+        });
+
+        // --- UI State Management ---
+        const setButtonsLoading = (isLoading, clickedButton) => {
+            // Disable both buttons during processing
+            generateBtn.disabled = isLoading;
+            generateConstantsBtn.disabled = isLoading;
+            
+            // Remove loading class from all buttons first
+            document.querySelectorAll('.generate-button').forEach(btn => btn.classList.remove('loading'));
+
+            // Add loading class only to the button that was clicked
+            if (isLoading && clickedButton) {
+                clickedButton.classList.add('loading');
             }
+        };
 
+        // --- Core Crypto Logic (Refactored) ---
+        async function generateCryptoValues(password, url) {
             // --- Hashing ---
             const msgBuffer = new TextEncoder().encode(password);
             const hashBuffer = await crypto.subtle.digest('SHA-256', msgBuffer);
@@ -239,14 +436,10 @@
             
             const ciphertext = await crypto.subtle.encrypt({ name: 'AES-GCM', iv: iv }, key, urlBuffer);
             
-            // --- Base64 Encoding for Storage ---
             const arrayBufferToBase64 = (buffer) => {
                 let binary = '';
                 const bytes = new Uint8Array(buffer);
-                const len = bytes.byteLength;
-                for (let i = 0; i < len; i++) {
-                    binary += String.fromCharCode(bytes[i]);
-                }
+                bytes.forEach((byte) => binary += String.fromCharCode(byte));
                 return window.btoa(binary);
             };
 
@@ -254,30 +447,148 @@
             const ivB64 = arrayBufferToBase64(iv);
             const ciphertextB64 = arrayBufferToBase64(ciphertext);
 
-            const outputCode = `// The SHA-256 hash of the password.
+            return { passwordHash, saltB64, ivB64, ciphertextB64 };
+        }
+
+        // --- Universal Handler for Generation ---
+        async function handleGeneration(clickedButton, formatter) {
+            const password = document.getElementById('password').value;
+            const url = document.getElementById('url').value;
+
+            if (!password || !url) {
+                showAlert("Please provide both a password and a string to protect.");
+                return;
+            }
+
+            setButtonsLoading(true, clickedButton);
+            outputElement.classList.remove('visible');
+            await new Promise(resolve => setTimeout(resolve, 50));
+
+            try {
+                const values = await generateCryptoValues(password, url);
+                const outputContent = formatter(values);
+
+                // Clear previous content
+                outputContainer.innerHTML = '';
+                
+                if (typeof outputContent === 'string') {
+                    // Handle simple text/code formatters
+                    const pre = document.createElement('pre');
+                    pre.id = 'outputCode';
+                    pre.textContent = outputContent;
+                    outputContainer.appendChild(pre);
+                    document.getElementById('copyBtn').style.display = 'block';
+
+                } else {
+                    // Handle complex HTML formatters (like the labeled list)
+                    outputContainer.appendChild(outputContent);
+                    document.getElementById('copyBtn').style.display = 'none'; // Hide main copy button
+                }
+
+                outputElement.classList.add('visible');
+            } catch (err) {
+                console.error("Crypto generation failed:", err);
+                showAlert("An error occurred during generation. Check the console for details.");
+            } finally {
+                setButtonsLoading(false, clickedButton);
+            }
+        }
+
+        // --- Event Listeners ---
+        generateBtn.addEventListener('click', (e) => {
+            const codeFormatter = ({ passwordHash, saltB64, ivB64, ciphertextB64 }) => {
+                return `// The SHA-256 hash of the password.
 const CORRECT_PASSWORD_HASH = '${passwordHash}';
-            
+                
 // Encrypted data for string using the password.
 const SALT_B64 = '${saltB64}';
 const IV_B64 = '${ivB64}';
 const CIPHERTEXT_B64 = '${ciphertextB64}';`;
-            
-            const outputElement = document.getElementById('output');
-            const outputCodeElement = document.getElementById('outputCode');
-            
-            outputCodeElement.textContent = outputCode;
-            outputElement.style.display = 'block';
+            };
+            handleGeneration(e.currentTarget, codeFormatter);
         });
 
+        generateConstantsBtn.addEventListener('click', (e) => {
+            const constantsFormatter = ({ passwordHash, saltB64, ivB64, ciphertextB64 }) => {
+                const grid = document.createElement('div');
+                grid.className = 'output-constants-grid';
+
+                const createRow = (label, value) => {
+                    const labelDiv = document.createElement('div');
+                    labelDiv.className = 'label';
+                    labelDiv.textContent = label + ':';
+
+                    const valueDiv = document.createElement('div');
+                    valueDiv.className = 'value';
+                    valueDiv.textContent = value;
+                    
+                    const button = document.createElement('button');
+                    button.className = 'copy-icon-btn';
+                    button.title = `Copy ${label}`;
+                    button.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24" fill="currentColor"><path d="M360-240q-33 0-56.5-23.5T280-320v-480q0-33 23.5-56.5T360-880h360q33 0 56.5 23.5T800-800v480q0 33-23.5 56.5T720-240H360Zm0-80h360v-480H360v480ZM200-80q-33 0-56.5-23.5T120-160v-560h80v560h440v80H200Zm160-240v-480 480Z"/></svg>`;
+                    
+                    const feedbackDiv = document.createElement('div');
+                    feedbackDiv.className = 'copy-feedback';
+
+                    button.onclick = () => {
+                        // Use execCommand for robustness in iframes
+                        const textArea = document.createElement("textarea");
+                        textArea.value = value;
+                        document.body.appendChild(textArea);
+                        textArea.focus();
+                        textArea.select();
+                        try {
+                            document.execCommand('copy');
+                            // Clear other feedback messages
+                            grid.querySelectorAll('.copy-feedback').forEach(el => el.textContent = '');
+                            feedbackDiv.textContent = 'Copied!';
+                            setTimeout(() => feedbackDiv.textContent = '', 2000);
+                        } catch (err) {
+                            console.error('Copy failed', err);
+                            feedbackDiv.textContent = 'Failed!';
+                            setTimeout(() => feedbackDiv.textContent = '', 2000);
+                        }
+                        document.body.removeChild(textArea);
+                    };
+
+                    grid.appendChild(labelDiv);
+                    grid.appendChild(valueDiv);
+                    grid.appendChild(button);
+                    grid.appendChild(feedbackDiv);
+                };
+
+                createRow('Password Hash', passwordHash);
+                createRow('Salt (Base64)', saltB64);
+                createRow('IV (Base64)', ivB64);
+                createRow('Ciphertext', ciphertextB64);
+
+                return grid;
+            };
+            handleGeneration(e.currentTarget, constantsFormatter);
+        });
+        
+        // --- Clipboard Logic ---
         document.getElementById('copyBtn').addEventListener('click', () => {
-            const codeToCopy = document.getElementById('outputCode').textContent;
-            navigator.clipboard.writeText(codeToCopy).then(() => {
-                const copyBtn = document.getElementById('copyBtn');
-                copyBtn.textContent = 'Copied!';
-                setTimeout(() => { copyBtn.textContent = 'Copy to Clipboard'; }, 2000);
-            }).catch(err => {
-                console.error('Failed to copy text: ', err);
-            });
+            const codeToCopy = document.getElementById('outputCode')?.textContent || '';
+            if (!codeToCopy) return;
+
+            // Use the 'execCommand' fallback for iframe environments
+            try {
+                 const textArea = document.createElement("textarea");
+                 textArea.value = codeToCopy;
+                 document.body.appendChild(textArea);
+                 textArea.focus();
+                 textArea.select();
+                 document.execCommand('copy');
+                 document.body.removeChild(textArea);
+
+                 const copyBtn = document.getElementById('copyBtn');
+                 copyBtn.textContent = 'Copied!';
+                 setTimeout(() => { copyBtn.textContent = 'Copy to Clipboard'; }, 2000);
+            } catch (err) {
+                 console.error('Fallback copy failed: ', err);
+                 showAlert('Failed to copy text.');
+            }
         });
     </script>
 </body>
